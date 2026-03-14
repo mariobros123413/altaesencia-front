@@ -30,8 +30,8 @@ const CategoryTopBar = ({ currentCategory }: CategoryTopBarProps) => {
   return (
     <div className="sticky top-28 z-30 mb-12">
       <div className="rounded-[28px] border border-[#d4af37]/20 bg-[#101814]/90 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-center">
+          {/* <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.35em] text-[#d4af37]/70">
                 Catalogos AltaEsencia
@@ -48,7 +48,7 @@ const CategoryTopBar = ({ currentCategory }: CategoryTopBarProps) => {
             >
               <Home className="h-5 w-5" />
             </Link>
-          </div>
+          </div> */}
 
           <div className="flex gap-3 overflow-x-auto pb-1 lg:pb-0">
             {categories.map((category) => {

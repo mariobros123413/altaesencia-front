@@ -1,6 +1,7 @@
-import { Menu, Sparkles } from 'lucide-react';
+import { Menu, ShoppingBag, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import { categoryLinks, homeSections } from '../lib/navigation';
 import SmoothScrollLink from './SmoothScrollLink';
 
@@ -8,6 +9,7 @@ const SiteHeader = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(location.hash.replace('#', '') || 'inicio');
+  const { totalItems } = useCart();
 
   const closeMenu = () => setIsOpen(false);
 
@@ -93,7 +95,7 @@ const SiteHeader = () => {
           </nav>
 
           <div className="hidden items-center gap-2 xl:flex">
-            {categoryLinks.map((category) => (
+            {/* {categoryLinks.map((category) => (
               <NavLink
                 key={category.id}
                 to={`/categoria/${category.id}`}
@@ -108,7 +110,25 @@ const SiteHeader = () => {
               >
                 {category.label}
               </NavLink>
-            ))}
+            ))} */}
+
+            <NavLink
+              to="/carrito"
+              className={({ isActive }) =>
+                [
+                  'relative inline-flex items-center gap-3 rounded-full border px-4 py-2 text-sm transition-all duration-300',
+                  isActive
+                    ? 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f2d680]'
+                    : 'border-[#d4af37]/10 bg-[#101814] text-gray-300 hover:border-[#d4af37]/30 hover:text-[#d4af37]'
+                ].join(' ')
+              }
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Carrito
+              <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-[#d4af37] px-2 py-1 text-xs font-bold text-black">
+                {totalItems}
+              </span>
+            </NavLink>
           </div>
 
           <button
@@ -155,6 +175,25 @@ const SiteHeader = () => {
                 </NavLink>
               ))}
             </div>
+
+            <NavLink
+              to="/carrito"
+              onClick={closeMenu}
+              className={({ isActive }) =>
+                [
+                  'mt-4 inline-flex items-center justify-center gap-3 rounded-2xl border px-4 py-3 text-center text-sm transition-all duration-300',
+                  isActive
+                    ? 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f2d680]'
+                    : 'border-[#d4af37]/10 bg-[#101814] text-gray-300 hover:border-[#d4af37]/30 hover:text-[#d4af37]'
+                ].join(' ')
+              }
+            >
+              <ShoppingBag className="h-4 w-4" />
+              Carrito
+              <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-[#d4af37] px-2 py-1 text-xs font-bold text-black">
+                {totalItems}
+              </span>
+            </NavLink>
           </div>
         )}
       </div>

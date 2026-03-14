@@ -1,21 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Star, ShoppingBag } from 'lucide-react';
+import { Check, ShoppingBag, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import CategoryTopBar from './CategoryTopBar';
 import SmoothImage from './SmoothImage';
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  original_price: number | null;
-  category: string;
-  image_url: string;
-  is_promotional: boolean;
-  discount_percentage: number;
-  rating: number;
-}
+import { MAX_QUANTITY_PER_PRODUCT, useCart } from '../context/CartContext';
+import type { Product } from '../types/product';
 
 interface ProductGalleryProps {
   category: string;
@@ -25,6 +14,9 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [cartNotice, setCartNotice] = useState('');
+  const [animatedCartProductId, setAnimatedCartProductId] = useState<string | null>(null);
+  const { addItem, getItemQuantity } = useCart();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -66,11 +58,46 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
     return descriptions[category] || '';
   };
 
+  useEffect(() => {
+    if (!cartNotice) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setCartNotice(''), 2200);
+    return () => window.clearTimeout(timeoutId);
+  }, [cartNotice]);
+
+  useEffect(() => {
+    if (!animatedCartProductId) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setAnimatedCartProductId(null), 900);
+    return () => window.clearTimeout(timeoutId);
+  }, [animatedCartProductId]);
+
+  const handleAddToCart = (product: Product) => {
+    if (getItemQuantity(product.id) > 0) {
+      setCartNotice(`${product.name} ya esta agregado al carrito`);
+      return;
+    }
+
+    addItem(product);
+    setAnimatedCartProductId(product.id);
+    setCartNotice(`${product.name} agregado al carrito`);
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0f0d]">
       <div className="pt-32 pb-16">
         <div className="container mx-auto px-6">
           <CategoryTopBar currentCategory={category} />
+
+          {cartNotice && (
+            <div className="mb-8 rounded-2xl border border-[#d4af37]/20 bg-[#101814] px-5 py-4 text-center text-sm uppercase tracking-[0.18em] text-[#f2d680] shadow-[0_12px_35px_rgba(0,0,0,0.22)]">
+              {cartNotice}
+            </div>
+          )}
 
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-serif text-[#d4af37] mb-4">
@@ -88,12 +115,15 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="group cursor-pointer"
-                  onClick={() => setSelectedProduct(product)}
-                >
+              {products.map((product) => {
+                const isInCart = getItemQuantity(product.id) > 0;
+
+                return (
+                  <div
+                    key={product.id}
+                    className="group cursor-pointer"
+                    onClick={() => setSelectedProduct(product)}
+                  >
                   <div className="relative overflow-hidden rounded-lg mb-4 h-80 bg-[#1a2520]">
                     <SmoothImage
                       src={product.image_url}
@@ -101,6 +131,11 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                       wrapperClassName="h-full"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
+                    {isInCart && (
+                      <div className="absolute top-4 left-4 rounded-full border border-emerald-400/30 bg-emerald-500/90 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-[0_10px_30px_rgba(16,185,129,0.3)]">
+                        En carrito
+                      </div>
+                    )}
                     {product.is_promotional && (
                       <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
                         -{product.discount_percentage}%
@@ -151,8 +186,9 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                       )}
                     </div>
                   </div>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -178,6 +214,12 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
               </div>
 
               <div className="space-y-6">
+                {getItemQuantity(selectedProduct.id) >= MAX_QUANTITY_PER_PRODUCT && (
+                  <div className="rounded-2xl border border-[#d4af37]/20 bg-[#101814] px-4 py-3 text-sm uppercase tracking-[0.14em] text-[#f2d680]">
+                    Ya alcanzaste el maximo de {MAX_QUANTITY_PER_PRODUCT} unidades para este producto.
+                  </div>
+                )}
+
                 <div>
                   <h2 className="text-3xl font-serif text-[#d4af37] mb-2">
                     {selectedProduct.name}
@@ -221,9 +263,35 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                   )}
                 </div>
 
-                <button className="w-full bg-[#d4af37] hover:bg-[#e5c158] text-black py-3 rounded-lg font-bold text-lg transition-colors flex items-center justify-center space-x-2">
-                  <ShoppingBag className="w-6 h-6" />
-                  <span>Anadir al Carrito</span>
+                {getItemQuantity(selectedProduct.id) > 0 && (
+                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm uppercase tracking-[0.14em] text-emerald-300">
+                    Este producto ya esta en tu carrito. Si quieres mas unidades, ajustalas desde la seccion Carrito.
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(selectedProduct)}
+                  disabled={getItemQuantity(selectedProduct.id) > 0}
+                  className={[
+                    'w-full py-3 rounded-lg font-bold text-lg transition-all duration-500 flex items-center justify-center space-x-2',
+                    getItemQuantity(selectedProduct.id) > 0
+                      ? 'bg-emerald-500 text-white shadow-[0_16px_40px_rgba(16,185,129,0.28)] cursor-not-allowed'
+                      : 'bg-[#d4af37] hover:bg-[#e5c158] text-black hover:scale-[1.01]',
+                    animatedCartProductId === selectedProduct.id ? 'animate-pulse scale-[1.02]' : ''
+                  ].join(' ')}
+                >
+                  {getItemQuantity(selectedProduct.id) > 0 ? (
+                    <>
+                      <Check className="w-6 h-6" />
+                      <span>Ya agregado al Carrito</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-6 h-6" />
+                      <span>Anadir al Carrito</span>
+                    </>
+                  )}
                 </button>
 
                 <button
