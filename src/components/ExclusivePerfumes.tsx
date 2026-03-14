@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom';
+import SmoothImage from './SmoothImage';
+
 const ExclusivePerfumes = () => {
   const perfumes = [
     {
@@ -19,7 +22,10 @@ const ExclusivePerfumes = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612]">
+    <section
+      id="perfumes"
+      className="scroll-mt-28 py-24 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612]"
+    >
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
@@ -34,9 +40,12 @@ const ExclusivePerfumes = () => {
               son elaborados con las mejores esencias del mundo, creando
               experiencias olfativas incomparables que definen tu personalidad.
             </p>
-            <button className="bg-[#d4af37] hover:bg-[#c4a137] text-black font-semibold px-10 py-4 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider">
+            <Link
+              to="/categoria/perfumes"
+              className="inline-flex bg-[#d4af37] hover:bg-[#c4a137] text-black font-semibold px-10 py-4 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
+            >
               Ver Perfumes
-            </button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-3 gap-6">
@@ -53,9 +62,10 @@ const ExclusivePerfumes = () => {
                       Destacado
                     </div>
                   )}
-                  <img
+                  <SmoothImage
                     src={perfume.image}
                     alt={perfume.name}
+                    wrapperClassName="h-full"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60"></div>

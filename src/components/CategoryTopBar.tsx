@@ -28,7 +28,7 @@ const categories = [
 
 const CategoryTopBar = ({ currentCategory }: CategoryTopBarProps) => {
   return (
-    <div className="sticky top-6 z-30 mb-12">
+    <div className="sticky top-28 z-30 mb-12">
       <div className="rounded-[28px] border border-[#d4af37]/20 bg-[#101814]/90 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center justify-between gap-3">

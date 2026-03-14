@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Shirt, Sparkles, Palette } from 'lucide-react';
+import SmoothImage from './SmoothImage';
 
 const Categories = () => {
   const categories = [
@@ -27,7 +28,10 @@ const Categories = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612]">
+    <section
+      id="categorias"
+      className="scroll-mt-28 py-24 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612]"
+    >
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-serif text-[#d4af37] mb-4">
@@ -59,9 +63,10 @@ const Categories = () => {
                   </h3>
 
                   <div className="relative h-64 mb-6 overflow-hidden rounded-lg">
-                    <img
+                    <SmoothImage
                       src={category.image}
                       alt={category.title}
+                      wrapperClassName="h-full rounded-lg"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

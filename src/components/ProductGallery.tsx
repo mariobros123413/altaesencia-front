@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Star, ShoppingBag } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import CategoryTopBar from './CategoryTopBar';
+import SmoothImage from './SmoothImage';
 
 interface Product {
   id: string;
@@ -94,9 +95,10 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                   onClick={() => setSelectedProduct(product)}
                 >
                   <div className="relative overflow-hidden rounded-lg mb-4 h-80 bg-[#1a2520]">
-                    <img
+                    <SmoothImage
                       src={product.image_url}
                       alt={product.name}
+                      wrapperClassName="h-full"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     {product.is_promotional && (
@@ -167,9 +169,10 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
               <div className="h-96 rounded-lg overflow-hidden">
-                <img
+                <SmoothImage
                   src={selectedProduct.image_url}
                   alt={selectedProduct.name}
+                  wrapperClassName="h-full rounded-lg"
                   className="w-full h-full object-cover"
                 />
               </div>

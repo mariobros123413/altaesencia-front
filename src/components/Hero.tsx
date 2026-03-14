@@ -1,6 +1,12 @@
+import SmoothScrollLink from './SmoothScrollLink';
+import SmoothImage from './SmoothImage';
+
 const Hero = () => {
   return (
-    <section className="relative h-screen bg-gradient-to-br from-[#0a1612] via-[#0d1a15] to-[#0a0f0d] overflow-hidden">
+    <section
+      id="inicio"
+      className="relative h-screen scroll-mt-28 bg-gradient-to-br from-[#0a1612] via-[#0d1a15] to-[#0a0f0d] overflow-hidden"
+    >
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
 
       <div className="container mx-auto px-6 h-full flex items-center">
@@ -12,16 +18,20 @@ const Hero = () => {
             <p className="text-xl text-gray-300 max-w-md leading-relaxed">
               Encuentra ropa, perfumes y cosméticos de las marcas más exclusivas.
             </p>
-            <button className="bg-[#d4af37] hover:bg-[#c4a137] text-black font-semibold px-10 py-4 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider">
-              Ver Colección
-            </button>
+            <SmoothScrollLink
+              to="/#categorias"
+              className="inline-flex bg-[#d4af37] hover:bg-[#c4a137] text-black font-semibold px-10 py-4 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
+            >
+              Ver Coleccion
+            </SmoothScrollLink>
           </div>
 
           <div className="relative h-[600px] hidden lg:block">
             <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#0a0f0d] z-10"></div>
-            <img
+            <SmoothImage
               src="https://images.pexels.com/photos/5704720/pexels-photo-5704720.jpeg"
               alt="Modelo con perfume"
+              wrapperClassName="h-full rounded-lg"
               className="w-full h-full object-cover rounded-lg"
             />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">

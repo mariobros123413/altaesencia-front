@@ -6,6 +6,8 @@ import ExclusivePerfumes from './components/ExclusivePerfumes';
 import PromoSection from './components/PromoSection';
 import Footer from './components/Footer';
 import CategoryPage from './pages/CategoryPage';
+import ScrollManager from './components/ScrollManager';
+import SiteHeader from './components/SiteHeader';
 
 function HomePage() {
   return (
@@ -23,6 +25,8 @@ function HomePage() {
 function App() {
   return (
     <Router>
+      <ScrollManager />
+      <SiteHeader />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/categoria/:category" element={<CategoryPage />} />
