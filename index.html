@@ -5,14 +5,179 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AltaEsencia Landing Page</title>
-    <meta name="description" content="Encuentra ropa, perfumes y cosméticos de las marcas más exclusivas. Moda de alto nivel, perfumes exclusivos y cosméticos selectos." />
+    <meta
+      name="description"
+      content="Encuentra ropa, perfumes y cosmeticos de las marcas mas exclusivas. Moda de alto nivel, perfumes exclusivos y cosmeticos selectos."
+    />
     <meta property="og:title" content="AltaEsencia - Estilo & Exclusividad" />
-    <meta property="og:description" content="Encuentra ropa, perfumes y cosméticos de las marcas más exclusivas." />
+    <meta property="og:description" content="Encuentra ropa, perfumes y cosmeticos de las marcas mas exclusivas." />
     <meta property="og:image" content="https://bolt.new/static/og_default.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #0a0f0d;
+      }
+
+      body {
+        color: #f5f5f5;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      #app-shell-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(circle at top, rgba(212, 175, 55, 0.16), transparent 42%),
+          linear-gradient(180deg, #0b1411 0%, #0a0f0d 100%);
+        transition: opacity 0.45s ease, visibility 0.45s ease;
+      }
+
+      #app-shell-loader::before {
+        content: "";
+        position: absolute;
+        width: 18rem;
+        height: 18rem;
+        border-radius: 9999px;
+        background: rgba(212, 175, 55, 0.1);
+        filter: blur(48px);
+      }
+
+      .app-shell-loader__content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      .app-shell-loader__mark {
+        position: relative;
+        width: 7rem;
+        height: 7rem;
+        margin: 0 auto 2rem;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(212, 175, 55, 0.25);
+        background: rgba(16, 24, 20, 0.8);
+        box-shadow: 0 0 60px rgba(212, 175, 55, 0.18);
+      }
+
+      .app-shell-loader__mark::before {
+        content: "";
+        position: absolute;
+        inset: 0.75rem;
+        border-radius: 9999px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+      }
+
+      .app-shell-loader__mark::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 9999px;
+        border: 2px solid transparent;
+        border-top-color: #d4af37;
+        border-right-color: rgba(212, 175, 55, 0.35);
+        animation: shellSpin 1.2s linear infinite;
+      }
+
+      .app-shell-loader__brand {
+        font-size: 2rem;
+        letter-spacing: 0.22em;
+        color: #d4af37;
+      }
+
+      .app-shell-loader__label {
+        margin: 0;
+        font-size: 0.72rem;
+        letter-spacing: 0.55em;
+        text-transform: uppercase;
+        color: rgba(212, 175, 55, 0.72);
+      }
+
+      .app-shell-loader__title {
+        margin: 1rem 0 0;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        color: #ffffff;
+      }
+
+      .app-shell-loader__subtitle {
+        margin: 1rem 0 0;
+        font-family: system-ui, sans-serif;
+        font-size: 0.82rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #8f9692;
+      }
+
+      .app-shell-loader__line {
+        width: 11rem;
+        height: 1px;
+        margin: 2rem auto 0;
+        overflow: hidden;
+        border-radius: 9999px;
+        background: rgba(212, 175, 55, 0.14);
+      }
+
+      .app-shell-loader__line span {
+        display: block;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #d4af37, transparent);
+        animation: shellSweep 1.5s ease-in-out infinite;
+      }
+
+      .app-shell-loader--hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      @keyframes shellSpin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes shellSweep {
+        0% {
+          transform: translateX(-110%);
+        }
+
+        50% {
+          transform: translateX(130%);
+        }
+
+        100% {
+          transform: translateX(130%);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="app-shell-loader" aria-hidden="true">
+      <div class="app-shell-loader__content">
+        <div class="app-shell-loader__mark">
+          <span class="app-shell-loader__brand">AE</span>
+        </div>
+        <p class="app-shell-loader__label">AltaEsencia</p>
+        <h1 class="app-shell-loader__title">Estilo y Exclusividad</h1>
+        <p class="app-shell-loader__subtitle">Cargando experiencia premium</p>
+        <div class="app-shell-loader__line">
+          <span></span>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
