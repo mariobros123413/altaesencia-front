@@ -2,7 +2,7 @@ import { Menu, ShoppingBag, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { categoryLinks, homeSections } from '../lib/navigation';
+import { useStorefront } from '../context/StorefrontContext';
 import SmoothScrollLink from './SmoothScrollLink';
 
 const SiteHeader = () => {
@@ -10,6 +10,9 @@ const SiteHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState(location.hash.replace('#', '') || 'inicio');
   const { totalItems } = useCart();
+  const {
+    bootstrap: { brand, categories, home }
+  } = useStorefront();
 
   const closeMenu = () => setIsOpen(false);
 
@@ -22,7 +25,7 @@ const SiteHeader = () => {
       return;
     }
 
-    const sectionIds = homeSections.map((section) => section.id);
+    const sectionIds = home.sections.map((section) => section.id);
     const elements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((element): element is HTMLElement => element !== null);
@@ -50,7 +53,7 @@ const SiteHeader = () => {
     elements.forEach((element) => observer.observe(element));
 
     return () => observer.disconnect();
-  }, [location.pathname]);
+  }, [home.sections, location.pathname]);
 
   useEffect(() => {
     if (location.hash) {
@@ -74,11 +77,11 @@ const SiteHeader = () => {
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d4af37] text-black">
               <Sparkles className="h-4 w-4" />
             </span>
-            <span className="font-serif text-lg leading-none">AltaEsencia</span>
+            <span className="font-serif text-lg leading-none">{brand.name}</span>
           </SmoothScrollLink>
 
           <nav className="hidden items-center gap-2 lg:flex">
-            {homeSections.map((section) => (
+            {home.sections.map((section) => (
               <SmoothScrollLink
                 key={section.id}
                 to={`/#${section.id}`}
@@ -95,22 +98,6 @@ const SiteHeader = () => {
           </nav>
 
           <div className="hidden items-center gap-2 xl:flex">
-            {/* {categoryLinks.map((category) => (
-              <NavLink
-                key={category.id}
-                to={`/categoria/${category.id}`}
-                className={({ isActive }) =>
-                  [
-                    'rounded-full border px-4 py-2 text-sm transition-all duration-300',
-                    isActive
-                      ? 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f2d680]'
-                      : 'border-[#d4af37]/10 bg-[#101814] text-gray-300 hover:border-[#d4af37]/30 hover:text-[#d4af37]'
-                  ].join(' ')
-                }
-              >
-                {category.label}
-              </NavLink>
-            ))} */}
 
             <NavLink
               to="/carrito"
@@ -144,7 +131,7 @@ const SiteHeader = () => {
         {isOpen && (
           <div className="mt-4 border-t border-[#d4af37]/10 pt-4 lg:hidden">
             <div className="flex flex-col gap-2">
-              {homeSections.map((section) => (
+              {home.sections.map((section) => (
                 <SmoothScrollLink
                   key={section.id}
                   to={`/#${section.id}`}
@@ -157,10 +144,10 @@ const SiteHeader = () => {
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {categoryLinks.map((category) => (
+              {categories.map((category) => (
                 <NavLink
                   key={category.id}
-                  to={`/categoria/${category.id}`}
+                  to={category.path}
                   onClick={closeMenu}
                   className={({ isActive }) =>
                     [

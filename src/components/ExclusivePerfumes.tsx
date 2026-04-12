@@ -1,80 +1,55 @@
 import { Link } from 'react-router-dom';
+import { useStorefront } from '../context/StorefrontContext';
 import SmoothImage from './SmoothImage';
 
 const ExclusivePerfumes = () => {
-  const perfumes = [
-    {
-      name: 'AltaEsencia Noir',
-      price: '$299.99',
-      image: 'https://images.pexels.com/photos/3685523/pexels-photo-3685523.jpeg'
-    },
-    {
-      name: 'AltaEsencia Gold',
-      price: '$349.99',
-      image: 'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
-      featured: true
-    },
-    {
-      name: 'AltaEsencia Prestige',
-      price: '$279.99',
-      image: 'https://images.pexels.com/photos/3018845/pexels-photo-3018845.jpeg'
-    }
-  ];
+  const {
+    bootstrap: { home }
+  } = useStorefront();
+  const section = home.exclusivePerfumes;
 
   return (
     <section
       id="perfumes"
-      className="scroll-mt-28 py-24 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612]"
+      className="scroll-mt-28 bg-gradient-to-b from-[#0a0f0d] to-[#0d1612] py-24"
     >
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <div className="space-y-8">
-            <h2 className="text-5xl font-serif text-[#d4af37]">
-              Perfumes Exclusivos
-            </h2>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              Descubre aromas únicos de las marcas más prestigiosas.
-            </p>
-            <p className="text-gray-400 leading-relaxed">
-              Cada fragancia cuenta una historia. Nuestros perfumes exclusivos
-              son elaborados con las mejores esencias del mundo, creando
-              experiencias olfativas incomparables que definen tu personalidad.
-            </p>
+            <h2 className="font-serif text-5xl text-[#d4af37]">{section.title}</h2>
+            <p className="text-xl leading-relaxed text-gray-300">{section.subtitle}</p>
+            <p className="leading-relaxed text-gray-400">{section.description}</p>
             <Link
-              to="/categoria/perfumes"
-              className="inline-flex bg-[#d4af37] hover:bg-[#c4a137] text-black font-semibold px-10 py-4 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
+              to={section.ctaHref}
+              className="inline-flex rounded bg-[#d4af37] px-10 py-4 font-semibold uppercase tracking-wider text-black transition-all duration-300 hover:scale-105 hover:bg-[#c4a137]"
             >
-              Ver Perfumes
+              {section.ctaLabel}
             </Link>
           </div>
 
           <div className="grid grid-cols-3 gap-6">
-            {perfumes.map((perfume, index) => (
+            {section.items.map((item) => (
               <div
-                key={index}
-                className={`group relative ${
-                  perfume.featured ? 'col-span-3 md:col-span-1' : ''
-                }`}
+                key={item.id}
+                className={`group relative ${item.featured ? 'col-span-3 md:col-span-1' : ''}`}
               >
-                <div className="relative h-80 rounded-lg overflow-hidden bg-gradient-to-b from-[#1a2520] to-[#0d1612] border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-all duration-500">
-                  {perfume.featured && (
-                    <div className="absolute top-4 left-4 z-10 bg-[#d4af37] text-black px-4 py-1 rounded-full text-xs font-bold uppercase">
+                <div className="relative h-80 overflow-hidden rounded-lg border border-[#d4af37]/20 bg-gradient-to-b from-[#1a2520] to-[#0d1612] transition-all duration-500 hover:border-[#d4af37]/50">
+                  {item.featured && (
+                    <div className="absolute top-4 left-4 z-10 rounded-full bg-[#d4af37] px-4 py-1 text-xs font-bold uppercase text-black">
                       Destacado
                     </div>
                   )}
                   <SmoothImage
-                    src={perfume.image}
-                    alt={perfume.name}
+                    src={item.image.src}
+                    alt={item.image.alt}
                     wrapperClassName="h-full"
                     optimizedWidth={700}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-[#d4af37] font-serif text-lg mb-2">
-                      {perfume.name}
-                    </h3>
-                    <p className="text-white text-xl font-bold">{perfume.price}</p>
+                  <div className="absolute right-0 bottom-0 left-0 translate-y-2 transform p-6 transition-transform duration-300 group-hover:translate-y-0">
+                    <h3 className="mb-2 font-serif text-lg text-[#d4af37]">{item.name}</h3>
+                    <p className="text-xl font-bold text-white">{item.priceLabel}</p>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@ import ScrollManager from './components/ScrollManager';
 import SiteHeader from './components/SiteHeader';
 import { CartProvider } from './context/CartContext';
 import AppLoader from './components/AppLoader';
+import { StorefrontProvider } from './context/StorefrontContext';
 
 const PremiumCollection = lazy(() => import('./components/PremiumCollection'));
 const ExclusivePerfumes = lazy(() => import('./components/ExclusivePerfumes'));
@@ -69,21 +70,23 @@ function App() {
 
   return (
     <CartProvider>
-      <>
-        {!isAppReady && <AppLoader />}
+      <StorefrontProvider>
+        <>
+          {!isAppReady && <AppLoader />}
 
-        <Router>
-          <ScrollManager />
-          <SiteHeader />
-          <Suspense fallback={<AppLoader />}>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/categoria/:category" element={<CategoryPage />} />
-              <Route path="/carrito" element={<CartPage />} />
-            </Routes>
-          </Suspense>
-        </Router>
-      </>
+          <Router>
+            <ScrollManager />
+            <SiteHeader />
+            <Suspense fallback={<AppLoader />}>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/categoria/:category" element={<CategoryPage />} />
+                <Route path="/carrito" element={<CartPage />} />
+              </Routes>
+            </Suspense>
+          </Router>
+        </>
+      </StorefrontProvider>
     </CartProvider>
   );
 }

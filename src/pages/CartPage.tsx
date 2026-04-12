@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { storefrontController } from '../controllers/storefrontController';
+import { useCart } from '../context/CartContext';
+import { useStorefront } from '../context/StorefrontContext';
 import SmoothImage from '../components/SmoothImage';
-import { MAX_QUANTITY_PER_PRODUCT, useCart } from '../context/CartContext';
 
-const WHATSAPP_NUMBER = '59175540850';
 const REMOVE_ANIMATION_MS = 320;
 
 const CartPage = () => {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } = useCart();
+  const {
+    bootstrap: { commerce }
+  } = useStorefront();
   const [removingItemIds, setRemovingItemIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -28,21 +32,12 @@ const CartPage = () => {
     }, REMOVE_ANIMATION_MS);
   };
 
-  const whatsappMessage = encodeURIComponent(
-    [
-      'Hola AltaEsencia, quiero completar mi compra:',
-      '',
-      ...items.map(
-        (item) =>
-          `- ${item.name} | Cantidad: ${item.quantity} | Subtotal: $${(item.price * item.quantity).toFixed(2)}`
-      ),
-      '',
-      `Total de productos: ${totalItems}`,
-      `Total a pagar: $${totalPrice.toFixed(2)}`
-    ].join('\n')
-  );
-
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappMessage}`;
+  const whatsappUrl = storefrontController.buildWhatsAppCheckoutUrl({
+    items,
+    totalItems,
+    totalPrice,
+    whatsappNumber: commerce.whatsappNumber
+  });
 
   return (
     <div className="min-h-screen bg-[#0a0f0d] pt-32 pb-16">
@@ -62,7 +57,7 @@ const CartPage = () => {
             </div>
             <h2 className="mb-4 font-serif text-3xl text-white">Tu carrito esta vacio</h2>
             <p className="mb-8 text-gray-400">
-              Explora nuestros catalogos y agrega hasta tres unidades por producto.
+              Explora nuestros catalogos y agrega hasta {commerce.maxQuantityPerProduct} unidades por producto.
             </p>
             <Link
               to="/#categorias"
@@ -86,75 +81,75 @@ const CartPage = () => {
                       isRemoving ? 'translate-x-6 scale-[0.98] opacity-0 blur-[2px]' : 'translate-x-0 opacity-100'
                     ].join(' ')}
                   >
-                  <SmoothImage
-                    src={item.image_url}
-                    alt={item.name}
-                    wrapperClassName="h-52 rounded-2xl"
-                    className="h-full w-full rounded-2xl object-cover"
-                  />
+                    <SmoothImage
+                      src={item.image_url}
+                      alt={item.name}
+                      wrapperClassName="h-52 rounded-2xl"
+                      className="h-full w-full rounded-2xl object-cover"
+                    />
 
-                  <div className="flex flex-col justify-between gap-5">
-                    <div>
-                      <div className="mb-3 flex items-start justify-between gap-4">
-                        <div>
-                          <p className="mb-2 text-xs uppercase tracking-[0.32em] text-[#d4af37]/70">
-                            {item.category}
-                          </p>
-                          <h2 className="font-serif text-2xl text-white">{item.name}</h2>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveItem(item.id)}
-                          disabled={isRemoving}
-                          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-red-400/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
-                          aria-label={`Quitar ${item.name} del carrito`}
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
-                      </div>
-
-                      <p className="max-w-xl text-sm leading-relaxed text-gray-400">{item.description}</p>
-                    </div>
-
-                    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div className="flex flex-col justify-between gap-5">
                       <div>
-                        <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Precio unitario</p>
-                        <p className="mt-2 text-3xl font-bold text-[#d4af37]">${item.price.toFixed(2)}</p>
-                      </div>
-
-                      <div className="flex flex-col gap-3">
-                        <p className="text-sm uppercase tracking-[0.24em] text-gray-500">
-                          Cantidad maxima: {MAX_QUANTITY_PER_PRODUCT}
-                        </p>
-                        <div className="flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1 || isRemoving}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-[#d4af37]/40 disabled:cursor-not-allowed disabled:opacity-40"
-                            aria-label={`Disminuir cantidad de ${item.name}`}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </button>
-
-                          <div className="min-w-16 rounded-full border border-[#d4af37]/15 bg-[#0d1411] px-5 py-3 text-center text-lg font-semibold text-white">
-                            {item.quantity}
+                        <div className="mb-3 flex items-start justify-between gap-4">
+                          <div>
+                            <p className="mb-2 text-xs uppercase tracking-[0.32em] text-[#d4af37]/70">
+                              {item.category}
+                            </p>
+                            <h2 className="font-serif text-2xl text-white">{item.name}</h2>
                           </div>
 
                           <button
                             type="button"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            disabled={item.quantity >= MAX_QUANTITY_PER_PRODUCT || isRemoving}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-[#d4af37]/40 disabled:cursor-not-allowed disabled:opacity-40"
-                            aria-label={`Aumentar cantidad de ${item.name}`}
+                            onClick={() => handleRemoveItem(item.id)}
+                            disabled={isRemoving}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-red-400/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                            aria-label={`Quitar ${item.name} del carrito`}
                           >
-                            <Plus className="h-4 w-4" />
+                            <Trash2 className="h-5 w-5" />
                           </button>
+                        </div>
+
+                        <p className="max-w-xl text-sm leading-relaxed text-gray-400">{item.description}</p>
+                      </div>
+
+                      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                        <div>
+                          <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Precio unitario</p>
+                          <p className="mt-2 text-3xl font-bold text-[#d4af37]">Bs{item.price.toFixed(2)}</p>
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                          <p className="text-sm uppercase tracking-[0.24em] text-gray-500">
+                            Cantidad maxima: {commerce.maxQuantityPerProduct}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1 || isRemoving}
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-[#d4af37]/40 disabled:cursor-not-allowed disabled:opacity-40"
+                              aria-label={`Disminuir cantidad de ${item.name}`}
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+
+                            <div className="min-w-16 rounded-full border border-[#d4af37]/15 bg-[#0d1411] px-5 py-3 text-center text-lg font-semibold text-white">
+                              {item.quantity}
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              disabled={item.quantity >= commerce.maxQuantityPerProduct || isRemoving}
+                              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/15 bg-[#151f1b] text-[#d4af37] transition-colors duration-300 hover:border-[#d4af37]/40 disabled:cursor-not-allowed disabled:opacity-40"
+                              aria-label={`Aumentar cantidad de ${item.name}`}
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
                   </article>
                 );
               })}
@@ -200,7 +195,7 @@ const CartPage = () => {
               </div>
 
               <p className="mt-6 text-sm leading-relaxed text-gray-500">
-                El mensaje incluira todos los productos y cantidades que seleccionaste para continuar la compra.
+                El carrito sigue siendo local en el navegador y solo se usa para construir el enlace final de WhatsApp.
               </p>
             </aside>
           </div>

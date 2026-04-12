@@ -1,12 +1,11 @@
 import { useParams, Navigate } from 'react-router-dom';
 import ProductGallery from '../components/ProductGallery';
+import { CATEGORY_IDS } from '../types/storefront';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
 
-  const validCategories = ['clothing', 'perfumes', 'cosmetics'];
-
-  if (!category || !validCategories.includes(category)) {
+  if (!category || !CATEGORY_IDS.includes(category as (typeof CATEGORY_IDS)[number])) {
     return <Navigate to="/" replace />;
   }
 

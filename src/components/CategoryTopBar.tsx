@@ -1,64 +1,36 @@
 import { Palette, Shirt, Sparkles } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useStorefront } from '../context/StorefrontContext';
+import type { CategoryId } from '../types/storefront';
 
 interface CategoryTopBarProps {
   currentCategory: string;
 }
 
-const categories = [
-  {
-    id: 'clothing',
-    label: 'Clothing',
-    subtitle: 'Alta costura',
-    icon: Shirt
-  },
-  {
-    id: 'perfumes',
-    label: 'Perfumes',
-    subtitle: 'Esencias selectas',
-    icon: Sparkles
-  },
-  {
-    id: 'cosmetics',
-    label: 'Cosmetics',
-    subtitle: 'Belleza premium',
-    icon: Palette
-  }
-];
+const iconMap: Record<CategoryId, typeof Shirt> = {
+  clothing: Shirt,
+  perfumes: Sparkles,
+  cosmetics: Palette
+};
 
 const CategoryTopBar = ({ currentCategory }: CategoryTopBarProps) => {
+  const {
+    bootstrap: { categories }
+  } = useStorefront();
+
   return (
     <div className="sticky top-28 z-30 mb-12">
       <div className="rounded-[28px] border border-[#d4af37]/20 bg-[#101814]/90 p-3 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-center">
-          {/* <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-[#d4af37]/70">
-                Catalogos AltaEsencia
-              </p>
-              <p className="mt-1 text-sm text-gray-400">
-                Explora cada linea sin salir de la experiencia premium.
-              </p>
-            </div>
-
-            <Link
-              to="/"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#d4af37]/20 bg-[#16201c] text-[#d4af37] transition-all duration-300 hover:border-[#d4af37]/50 hover:bg-[#1c2924]"
-              aria-label="Volver al inicio"
-            >
-              <Home className="h-5 w-5" />
-            </Link>
-          </div> */}
-
           <div className="flex gap-3 overflow-x-auto pb-1 lg:pb-0">
             {categories.map((category) => {
-              const Icon = category.icon;
+              const Icon = iconMap[category.id];
               const isActive = currentCategory === category.id;
 
               return (
                 <NavLink
                   key={category.id}
-                  to={`/categoria/${category.id}`}
+                  to={category.path}
                   className={[
                     'group min-w-[190px] rounded-2xl border px-4 py-3 transition-all duration-300',
                     isActive
@@ -86,7 +58,7 @@ const CategoryTopBar = ({ currentCategory }: CategoryTopBarProps) => {
                           isActive ? 'text-[#f1d57a]' : 'text-gray-500'
                         ].join(' ')}
                       >
-                        {category.subtitle}
+                        {category.navSubtitle}
                       </p>
                     </div>
                   </div>
