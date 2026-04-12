@@ -1,8 +1,11 @@
 import { ImgHTMLAttributes, useEffect, useState } from 'react';
+import { getOptimizedImageSrc, getOptimizedImageSrcSet } from '../lib/image';
 
 interface SmoothImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   wrapperClassName?: string;
   skeletonClassName?: string;
+  optimizedWidth?: number;
+  priority?: boolean;
 }
 
 const SmoothImage = ({
@@ -11,13 +14,20 @@ const SmoothImage = ({
   className = '',
   wrapperClassName = '',
   skeletonClassName = '',
+  optimizedWidth = 1200,
+  priority = false,
+  fetchPriority,
   ...props
 }: SmoothImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const optimizedSrc = getOptimizedImageSrc(src, optimizedWidth);
+  const optimizedSrcSet = getOptimizedImageSrcSet(src, optimizedWidth);
+  const fetchPriorityValue = fetchPriority || (priority ? 'high' : 'auto');
+  const imagePriorityProps = fetchPriorityValue ? { fetchpriority: fetchPriorityValue } : {};
 
   useEffect(() => {
     setIsLoaded(false);
-  }, [src]);
+  }, [optimizedSrc]);
 
   return (
     <div className={`relative overflow-hidden bg-[#111917] ${wrapperClassName}`.trim()}>
@@ -34,8 +44,12 @@ const SmoothImage = ({
 
       <img
         {...props}
-        src={src}
+        {...imagePriorityProps}
+        src={optimizedSrc}
+        srcSet={props.srcSet || optimizedSrcSet}
         alt={alt}
+        loading={props.loading || (priority ? 'eager' : 'lazy')}
+        decoding={props.decoding || 'async'}
         className={`${className} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`.trim()}
         onLoad={() => setIsLoaded(true)}
         onError={() => setIsLoaded(true)}

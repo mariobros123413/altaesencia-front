@@ -19,6 +19,7 @@ const PremiumCollection = () => {
                     src="https://images.pexels.com/photos/3990842/pexels-photo-3990842.jpeg"
                     alt="Zapatillas premium"
                     wrapperClassName="h-full rounded-lg"
+                    optimizedWidth={700}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                   />
                 </div>
@@ -27,6 +28,7 @@ const PremiumCollection = () => {
                     src="https://images.pexels.com/photos/701877/pexels-photo-701877.jpeg"
                     alt="Gafas de sol"
                     wrapperClassName="h-full rounded-lg"
+                    optimizedWidth={700}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                   />
                 </div>
@@ -37,6 +39,7 @@ const PremiumCollection = () => {
                     src="https://images.pexels.com/photos/1706694/pexels-photo-1706694.jpeg"
                     alt="Perfume premium"
                     wrapperClassName="h-full rounded-lg"
+                    optimizedWidth={700}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                   />
                 </div>
@@ -45,6 +48,7 @@ const PremiumCollection = () => {
                     src="https://images.pexels.com/photos/949670/pexels-photo-949670.jpeg"
                     alt="Perfumes de lujo"
                     wrapperClassName="h-full rounded-lg"
+                    optimizedWidth={700}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                   />
                 </div>

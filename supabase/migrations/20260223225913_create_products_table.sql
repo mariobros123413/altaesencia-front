@@ -1,24 +1,4 @@
-/*
-  # Create products table
 
-  1. New Tables
-    - `products`
-      - `id` (uuid, primary key)
-      - `name` (text, product name)
-      - `description` (text, product description)
-      - `price` (numeric, product price)
-      - `original_price` (numeric, original price for discounts)
-      - `category` (text, product category: clothing, perfumes, cosmetics)
-      - `image_url` (text, product image URL)
-      - `is_promotional` (boolean, whether it's on promotion)
-      - `discount_percentage` (integer, discount percentage if on promotion)
-      - `rating` (numeric, product rating)
-      - `created_at` (timestamp)
-
-  2. Security
-    - Enable RLS on `products` table
-    - Add policy for public read access (products are public)
-*/
 
 CREATE TABLE IF NOT EXISTS products (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,5 +1,5 @@
-import { Home, Palette, Shirt, Sparkles } from 'lucide-react';
-import { Link, NavLink } from 'react-router-dom';
+import { Palette, Shirt, Sparkles } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 interface CategoryTopBarProps {
   currentCategory: string;

@@ -32,6 +32,8 @@ const Hero = () => {
               src="https://images.pexels.com/photos/5704720/pexels-photo-5704720.jpeg"
               alt="Modelo con perfume"
               wrapperClassName="h-full rounded-lg"
+              optimizedWidth={1600}
+              priority
               className="w-full h-full object-cover rounded-lg"
             />
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">

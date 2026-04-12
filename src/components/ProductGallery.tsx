@@ -10,6 +10,9 @@ interface ProductGalleryProps {
   category: string;
 }
 
+const PRODUCT_CACHE_PREFIX = 'altaesencia-products-';
+const PRODUCT_CACHE_TTL_MS = 1000 * 60 * 5;
+
 const ProductGallery = ({ category }: ProductGalleryProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,9 +22,39 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
   const { addItem, getItemQuantity } = useCart();
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchProducts = async () => {
+      const cacheKey = `${PRODUCT_CACHE_PREFIX}${category}`;
+      let cachedProducts: Product[] = [];
+      let cachedTimestamp = 0;
+
       try {
-        setLoading(true);
+        const cachedData = window.sessionStorage.getItem(cacheKey);
+
+        if (cachedData) {
+          const parsedCache = JSON.parse(cachedData) as { products: Product[]; timestamp: number };
+          cachedProducts = parsedCache.products || [];
+          cachedTimestamp = parsedCache.timestamp || 0;
+
+          if (cachedProducts.length && isMounted) {
+            setProducts(cachedProducts);
+            setLoading(false);
+          }
+
+          if (Date.now() - cachedTimestamp < PRODUCT_CACHE_TTL_MS) {
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error reading product cache:', error);
+      }
+
+      try {
+        if (!cachedProducts.length && isMounted) {
+          setLoading(true);
+        }
+
         const { data, error } = await supabase
           .from('products')
           .select('*')
@@ -29,15 +62,38 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setProducts(data || []);
+
+        if (!isMounted) {
+          return;
+        }
+
+        const nextProducts = data || [];
+        setProducts(nextProducts);
+        try {
+          window.sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              products: nextProducts,
+              timestamp: Date.now()
+            })
+          );
+        } catch (cacheError) {
+          console.error('Error saving product cache:', cacheError);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProducts();
+
+    return () => {
+      isMounted = false;
+    };
   }, [category]);
 
   const getCategoryTitle = () => {
@@ -129,6 +185,7 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                       src={product.image_url}
                       alt={product.name}
                       wrapperClassName="h-full"
+                      optimizedWidth={900}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     {isInCart && (
@@ -209,6 +266,8 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                   src={selectedProduct.image_url}
                   alt={selectedProduct.name}
                   wrapperClassName="h-full rounded-lg"
+                  optimizedWidth={1400}
+                  priority
                   className="w-full h-full object-cover"
                 />
               </div>

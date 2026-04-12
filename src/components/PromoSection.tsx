@@ -62,6 +62,7 @@ const PromoSection = () => {
                 src="https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg"
                 alt="Productos en promocion"
                 wrapperClassName="h-full"
+                optimizedWidth={1200}
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0d1612] via-transparent to-transparent lg:hidden"></div>
