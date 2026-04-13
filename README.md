@@ -2,12 +2,6 @@
 
 Landing ecommerce premium para moda, perfumes y cosmeticos, con catalogos por categoria, carrito local y cierre de compra por WhatsApp.
 
-## Descripcion corta para GitHub
-
-Puedes usar esta descripcion para tu repositorio:
-
-`Frontend ecommerce premium con React, catalogos dinamicos, carrito local y checkout por WhatsApp, preparado para integrarse con backend API.`
-
 ## Que hace este proyecto
 
 AltaEsencia es una aplicacion frontend construida para mostrar una experiencia de tienda premium con enfoque visual elegante y flujo de compra simple.
