@@ -17,10 +17,10 @@ const PremiumCollection = () => {
 
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-          <div className="relative h-[500px]">
+          <div className="relative h-[500px] overflow-hidden lg:h-[540px]">
             <div className="grid h-full grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="h-1/2 overflow-hidden rounded-lg">
+              <div className="grid h-full grid-rows-2 gap-4">
+                <div className="min-h-0 overflow-hidden rounded-lg">
                   <SmoothImage
                     src={section.images[0]?.src}
                     alt={section.images[0]?.alt || section.title}
@@ -29,7 +29,7 @@ const PremiumCollection = () => {
                     className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
                   />
                 </div>
-                <div className="h-1/2 overflow-hidden rounded-lg">
+                <div className="min-h-0 overflow-hidden rounded-lg">
                   <SmoothImage
                     src={section.images[1]?.src}
                     alt={section.images[1]?.alt || section.title}
@@ -39,8 +39,8 @@ const PremiumCollection = () => {
                   />
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="h-1/3 overflow-hidden rounded-lg">
+              <div className="grid h-full grid-rows-[1fr_2fr] gap-4">
+                <div className="min-h-0 overflow-hidden rounded-lg">
                   <SmoothImage
                     src={section.images[2]?.src}
                     alt={section.images[2]?.alt || section.title}
@@ -49,7 +49,7 @@ const PremiumCollection = () => {
                     className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
                   />
                 </div>
-                <div className="h-2/3 overflow-hidden rounded-lg">
+                <div className="min-h-0 overflow-hidden rounded-lg">
                   <SmoothImage
                     src={section.images[3]?.src}
                     alt={section.images[3]?.alt || section.title}
