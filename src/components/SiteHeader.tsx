@@ -1,4 +1,4 @@
-import { Menu, ShoppingBag, Sparkles } from 'lucide-react';
+import { Menu, ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -74,8 +74,8 @@ const SiteHeader = () => {
             to="/#inicio"
             className="inline-flex items-center gap-3 rounded-full border border-[#d4af37]/15 bg-[#101814] px-4 py-2 text-[#d4af37] transition-colors duration-300 hover:border-[#d4af37]/40"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#d4af37] text-black">
-              <Sparkles className="h-4 w-4" />
+            <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full">
+              <img src="/logo-mark.svg" alt="" aria-hidden="true" className="h-9 w-9 rounded-full" />
             </span>
             <span className="font-serif text-lg leading-none">{brand.name}</span>
           </SmoothScrollLink>

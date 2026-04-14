@@ -8,7 +8,7 @@ const AppLoader = () => {
         <div className="relative mb-8 flex h-28 w-28 items-center justify-center rounded-full border border-[#d4af37]/25 bg-[#101814]/80 shadow-[0_0_60px_rgba(212,175,55,0.18)]">
           <div className="absolute inset-3 rounded-full border border-[#d4af37]/20" />
           <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#d4af37] border-r-[#d4af37]/40 animate-spin" />
-          <span className="font-serif text-2xl tracking-[0.22em] text-[#d4af37]">AE</span>
+          <img src="/logo-mark.svg" alt="AltaEsencia" className="relative z-10 h-16 w-16 rounded-[18px]" />
         </div>
 
         <p className="text-xs uppercase tracking-[0.55em] text-[#d4af37]/70">AltaEsencia</p>

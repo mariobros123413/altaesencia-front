@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageCircle, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import SiteSeo from '../components/SiteSeo';
 import { storefrontController } from '../controllers/storefrontController';
 import { useCart } from '../context/CartContext';
 import { useStorefront } from '../context/StorefrontContext';
+import { toAbsoluteSiteUrl } from '../lib/siteMeta';
 import SmoothImage from '../components/SmoothImage';
 
 const REMOVE_ANIMATION_MS = 320;
@@ -11,7 +13,7 @@ const REMOVE_ANIMATION_MS = 320;
 const CartPage = () => {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } = useCart();
   const {
-    bootstrap: { commerce }
+    bootstrap: { brand, commerce }
   } = useStorefront();
   const [removingItemIds, setRemovingItemIds] = useState<string[]>([]);
 
@@ -41,6 +43,22 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0f0d] pt-32 pb-16">
+      <SiteSeo
+        title={`Carrito de compras | ${brand.name}`}
+        description="Revisa tus productos seleccionados y finaliza tu pedido premium por WhatsApp."
+        robots="noindex, follow"
+        structuredData={{
+          '@type': 'WebPage',
+          name: 'Carrito de compras',
+          description: 'Pagina de carrito y cierre de compra por WhatsApp.',
+          url: toAbsoluteSiteUrl('/carrito'),
+          isPartOf: {
+            '@type': 'WebSite',
+            name: brand.name,
+            url: toAbsoluteSiteUrl('/')
+          }
+        }}
+      />
       <div className="container mx-auto px-6">
         <div className="mb-12 text-center">
           <h1 className="mb-4 font-serif text-5xl text-[#d4af37] md:text-6xl">Carrito</h1>

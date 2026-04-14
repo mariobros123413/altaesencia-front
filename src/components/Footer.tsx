@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-6">
-            <h3 className="font-serif text-3xl text-[#d4af37]">{brand.name}</h3>
+            <img src="/logo-horizontal.svg" alt={`${brand.name} logo`} className="h-12 w-auto" />
             <p className="leading-relaxed text-gray-400">{footer.description}</p>
             <div className="flex space-x-4">
               {[Instagram, Facebook, Twitter].map((Icon, index) => (

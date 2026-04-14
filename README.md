@@ -91,9 +91,12 @@ Crea o completa tu archivo `.env` con:
 
 ```env
 VITE_BACKEND_API_URL=
+VITE_SITE_URL=
 ```
 
 Si esa variable no existe, el proyecto usa datos fallback locales.
+
+`VITE_SITE_URL` se usa para enriquecer SEO tecnico como URLs canonicas, Open Graph y datos estructurados con tu dominio final.
 
 ## Instalacion
 

@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Hero from './components/Hero';
 import Categories from './components/Categories';
 import ScrollManager from './components/ScrollManager';
+import SiteSeo from './components/SiteSeo';
 import SiteHeader from './components/SiteHeader';
 import { CartProvider } from './context/CartContext';
 import AppLoader from './components/AppLoader';
-import { StorefrontProvider } from './context/StorefrontContext';
+import { StorefrontProvider, useStorefront } from './context/StorefrontContext';
+import { DEFAULT_KEYWORDS, DEFAULT_OG_IMAGE, toAbsoluteSiteUrl } from './lib/siteMeta';
 
 const PremiumCollection = lazy(() => import('./components/PremiumCollection'));
 const ExclusivePerfumes = lazy(() => import('./components/ExclusivePerfumes'));
@@ -24,8 +26,53 @@ const SectionPlaceholder = ({ height = 'min-h-[320px]' }: { height?: string }) =
 );
 
 function HomePage() {
+  const {
+    bootstrap: { brand, home }
+  } = useStorefront();
+  const description = `${home.hero.subtitle} ${home.footer.description}`;
+
   return (
     <div className="min-h-screen bg-[#0a0f0d]">
+      <SiteSeo
+        title={`${brand.name} | ${brand.tagline}`}
+        description={description}
+        image={DEFAULT_OG_IMAGE}
+        keywords={DEFAULT_KEYWORDS}
+        structuredData={[
+          {
+            '@type': 'Organization',
+            name: brand.name,
+            alternateName: brand.shortName,
+            description: home.footer.description,
+            url: toAbsoluteSiteUrl('/'),
+            logo: toAbsoluteSiteUrl('/logo-horizontal.svg'),
+            image: toAbsoluteSiteUrl(DEFAULT_OG_IMAGE),
+            email: home.footer.contact.email,
+            telephone: home.footer.contact.phone
+          },
+          {
+            '@type': 'WebSite',
+            name: brand.name,
+            url: toAbsoluteSiteUrl('/'),
+            description,
+            inLanguage: 'es-BO'
+          },
+          {
+            '@type': 'Store',
+            name: brand.name,
+            description: home.footer.description,
+            url: toAbsoluteSiteUrl('/'),
+            image: toAbsoluteSiteUrl(DEFAULT_OG_IMAGE),
+            telephone: home.footer.contact.phone,
+            email: home.footer.contact.email,
+            address: {
+              '@type': 'PostalAddress',
+              streetAddress: home.footer.contact.address,
+              addressCountry: 'BO'
+            }
+          }
+        ]}
+      />
       <Hero />
       <Categories />
 
