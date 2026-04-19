@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Hero from './components/Hero';
 import Categories from './components/Categories';
+import FloatingCartButton from './components/FloatingCartButton';
 import ScrollManager from './components/ScrollManager';
 import SiteSeo from './components/SiteSeo';
 import SiteHeader from './components/SiteHeader';
@@ -124,6 +125,7 @@ function App() {
           <Router>
             <ScrollManager />
             <SiteHeader />
+            <FloatingCartButton />
             <Suspense fallback={<AppLoader />}>
               <Routes>
                 <Route path="/" element={<HomePage />} />

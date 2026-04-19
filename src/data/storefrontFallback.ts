@@ -193,6 +193,11 @@ export const fallbackProducts: Product[] = [
     original_price: 249.99,
     category: 'perfumes',
     image_url: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+      'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
+      'https://images.pexels.com/photos/3018845/pexels-photo-3018845.jpeg'
+    ],
     is_promotional: true,
     discount_percentage: 24,
     rating: 4.9
@@ -205,6 +210,11 @@ export const fallbackProducts: Product[] = [
     original_price: 499.99,
     category: 'clothing',
     image_url: 'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg',
+      'https://images.pexels.com/photos/1661471/pexels-photo-1661471.jpeg',
+      'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg'
+    ],
     is_promotional: true,
     discount_percentage: 20,
     rating: 4.8
@@ -217,6 +227,11 @@ export const fallbackProducts: Product[] = [
     original_price: 179.99,
     category: 'cosmetics',
     image_url: 'https://images.pexels.com/photos/3762285/pexels-photo-3762285.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3762285/pexels-photo-3762285.jpeg',
+      'https://images.pexels.com/photos/3987003/pexels-photo-3987003.jpeg',
+      'https://images.pexels.com/photos/3738313/pexels-photo-3738313.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 4.7
@@ -229,6 +244,11 @@ export const fallbackProducts: Product[] = [
     original_price: 349.99,
     category: 'perfumes',
     image_url: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+      'https://images.pexels.com/photos/3685523/pexels-photo-3685523.jpeg',
+      'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 5
@@ -241,6 +261,11 @@ export const fallbackProducts: Product[] = [
     original_price: 349.99,
     category: 'clothing',
     image_url: 'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg',
+      'https://images.pexels.com/photos/3990842/pexels-photo-3990842.jpeg',
+      'https://images.pexels.com/photos/1706694/pexels-photo-1706694.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 4.6
@@ -253,6 +278,11 @@ export const fallbackProducts: Product[] = [
     original_price: 99.99,
     category: 'cosmetics',
     image_url: 'https://images.pexels.com/photos/3987003/pexels-photo-3987003.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3987003/pexels-photo-3987003.jpeg',
+      'https://images.pexels.com/photos/3762285/pexels-photo-3762285.jpeg',
+      'https://images.pexels.com/photos/3738313/pexels-photo-3738313.jpeg'
+    ],
     is_promotional: true,
     discount_percentage: 20,
     rating: 4.8
@@ -265,6 +295,11 @@ export const fallbackProducts: Product[] = [
     original_price: 279.99,
     category: 'perfumes',
     image_url: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+      'https://images.pexels.com/photos/3018845/pexels-photo-3018845.jpeg',
+      'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 4.9
@@ -277,6 +312,11 @@ export const fallbackProducts: Product[] = [
     original_price: 459.99,
     category: 'clothing',
     image_url: 'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3394650/pexels-photo-3394650.jpeg',
+      'https://images.pexels.com/photos/3622622/pexels-photo-3622622.jpeg',
+      'https://images.pexels.com/photos/1661471/pexels-photo-1661471.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 4.7
@@ -289,6 +329,11 @@ export const fallbackProducts: Product[] = [
     original_price: 199.99,
     category: 'cosmetics',
     image_url: 'https://images.pexels.com/photos/3738313/pexels-photo-3738313.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3738313/pexels-photo-3738313.jpeg',
+      'https://images.pexels.com/photos/3762285/pexels-photo-3762285.jpeg',
+      'https://images.pexels.com/photos/3987003/pexels-photo-3987003.jpeg'
+    ],
     is_promotional: false,
     discount_percentage: 0,
     rating: 4.8
@@ -301,6 +346,11 @@ export const fallbackProducts: Product[] = [
     original_price: 299.99,
     category: 'perfumes',
     image_url: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+    image_urls: [
+      'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg',
+      'https://images.pexels.com/photos/965989/pexels-photo-965989.jpeg',
+      'https://images.pexels.com/photos/3685523/pexels-photo-3685523.jpeg'
+    ],
     is_promotional: true,
     discount_percentage: 26,
     rating: 5

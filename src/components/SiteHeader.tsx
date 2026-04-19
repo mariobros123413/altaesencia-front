@@ -97,27 +97,6 @@ const SiteHeader = () => {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2 xl:flex">
-
-            <NavLink
-              to="/carrito"
-              className={({ isActive }) =>
-                [
-                  'relative inline-flex items-center gap-3 rounded-full border px-4 py-2 text-sm transition-all duration-300',
-                  isActive
-                    ? 'border-[#d4af37]/50 bg-[#d4af37]/15 text-[#f2d680]'
-                    : 'border-[#d4af37]/10 bg-[#101814] text-gray-300 hover:border-[#d4af37]/30 hover:text-[#d4af37]'
-                ].join(' ')
-              }
-            >
-              <ShoppingBag className="h-4 w-4" />
-              Carrito
-              <span className="inline-flex min-w-7 items-center justify-center rounded-full bg-[#d4af37] px-2 py-1 text-xs font-bold text-black">
-                {totalItems}
-              </span>
-            </NavLink>
-          </div>
-
           <button
             type="button"
             onClick={() => setIsOpen((open) => !open)}

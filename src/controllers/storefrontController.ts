@@ -13,6 +13,18 @@ const BACKEND_ENDPOINTS = {
   categoryProducts: (categoryId: CategoryId) => `/storefront/categories/${categoryId}/products`
 };
 
+const normalizeProductImages = (product: Product): Product => {
+  const imageUrls = Array.from(
+    new Set([product.image_url, ...(product.image_urls || [])].filter((imageUrl) => Boolean(imageUrl?.trim())))
+  );
+
+  return {
+    ...product,
+    image_url: imageUrls[0] || product.image_url,
+    image_urls: imageUrls
+  };
+};
+
 const readCache = <T>(key: string) => {
   if (typeof window === 'undefined') {
     return null;
@@ -65,7 +77,7 @@ const getCategoryFallback = (categoryId: CategoryId): CategoryCatalogResponse =>
 
   return {
     category,
-    products: fallbackProducts.filter((product) => product.category === categoryId)
+    products: fallbackProducts.filter((product) => product.category === categoryId).map(normalizeProductImages)
   };
 };
 
@@ -121,7 +133,9 @@ export const storefrontController = {
     }
 
     try {
-      const products = await getJson<Product[]>(BACKEND_ENDPOINTS.categoryProducts(categoryId));
+      const products = (await getJson<Product[]>(BACKEND_ENDPOINTS.categoryProducts(categoryId))).map(
+        normalizeProductImages
+      );
       const category =
         storefrontBootstrapFallback.categories.find((item) => item.id === categoryId) ||
         storefrontBootstrapFallback.categories[0];

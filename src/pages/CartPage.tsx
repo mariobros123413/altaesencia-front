@@ -127,7 +127,6 @@ const CartPage = () => {
                           </button>
                         </div>
 
-                        <p className="max-w-xl text-sm leading-relaxed text-gray-400">{item.description}</p>
                       </div>
 
                       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -188,7 +187,7 @@ const CartPage = () => {
                 </div>
                 <div className="flex items-center justify-between text-xl font-semibold text-white">
                   <span>Total</span>
-                  <span className="text-[#d4af37]">${totalPrice.toFixed(2)}</span>
+                  <span className="text-[#d4af37]">Bs{totalPrice.toFixed(2)}</span>
                 </div>
               </div>
 
