@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronLeft, ChevronRight, Images, ShoppingBag, Star } from 'lucide-react';
 import { storefrontController } from '../controllers/storefrontController';
 import { useCart } from '../context/CartContext';
@@ -17,14 +17,50 @@ const getProductImages = (product: Product) =>
     new Set([product.image_url, ...(product.image_urls || [])].filter((imageUrl): imageUrl is string => Boolean(imageUrl?.trim())))
   );
 
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+const getPointerDistance = (firstPointer: { x: number; y: number }, secondPointer: { x: number; y: number }) =>
+  Math.hypot(secondPointer.x - firstPointer.x, secondPointer.y - firstPointer.y);
+
+const getClampedViewerOffset = (
+  offset: { x: number; y: number },
+  scale: number,
+  imageElement: HTMLImageElement | null
+) => {
+  if (!imageElement || scale <= 1) {
+    return { x: 0, y: 0 };
+  }
+
+  const maxOffsetX = Math.max(0, (imageElement.offsetWidth * (scale - 1)) / 2);
+  const maxOffsetY = Math.max(0, (imageElement.offsetHeight * (scale - 1)) / 2);
+
+  return {
+    x: clamp(offset.x, -maxOffsetX, maxOffsetX),
+    y: clamp(offset.y, -maxOffsetY, maxOffsetY)
+  };
+};
+
 const ProductGallery = ({ category }: ProductGalleryProps) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [hoverZoom, setHoverZoom] = useState({ active: false, x: 50, y: 50 });
+  const [isFullscreenViewerOpen, setIsFullscreenViewerOpen] = useState(false);
+  const [viewerScale, setViewerScale] = useState(1);
+  const [viewerOffset, setViewerOffset] = useState({ x: 0, y: 0 });
+  const [isViewerInteracting, setIsViewerInteracting] = useState(false);
   const [cartNotice, setCartNotice] = useState('');
   const [animatedCartProductId, setAnimatedCartProductId] = useState<string | null>(null);
   const thumbnailRailRef = useRef<HTMLDivElement | null>(null);
+  const viewerImageRef = useRef<HTMLImageElement | null>(null);
+  const viewerScaleRef = useRef(1);
+  const viewerOffsetRef = useRef({ x: 0, y: 0 });
+  const activePointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchStartDistanceRef = useRef(0);
+  const pinchStartScaleRef = useRef(1);
+  const panStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const { addItem, getItemQuantity } = useCart();
   const { getCategoryById } = useStorefront();
 
@@ -40,6 +76,21 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
 
   const selectedProductActiveImage =
     selectedProductImages[selectedImageIndex] || selectedProductImages[0] || selectedProduct?.image_url || '';
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(hover: none), (pointer: coarse)');
+    const updateDeviceMode = () => setIsTouchDevice(mediaQuery.matches);
+
+    updateDeviceMode();
+
+    mediaQuery.addEventListener('change', updateDeviceMode);
+
+    return () => mediaQuery.removeEventListener('change', updateDeviceMode);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -92,7 +143,20 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
 
   useEffect(() => {
     setSelectedImageIndex(0);
+    setHoverZoom({ active: false, x: 50, y: 50 });
+    setIsFullscreenViewerOpen(false);
+    setViewerScale(1);
+    setViewerOffset({ x: 0, y: 0 });
+    setIsViewerInteracting(false);
   }, [selectedProduct?.id]);
+
+  useEffect(() => {
+    viewerScaleRef.current = viewerScale;
+  }, [viewerScale]);
+
+  useEffect(() => {
+    viewerOffsetRef.current = viewerOffset;
+  }, [viewerOffset]);
 
   useEffect(() => {
     if (!selectedProduct) {
@@ -158,6 +222,155 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
 
       return nextIndex;
     });
+  };
+
+  const handlePreviewMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (isTouchDevice) {
+      return;
+    }
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const pointerX = clamp(((event.clientX - bounds.left) / bounds.width) * 100, 0, 100);
+    const pointerY = clamp(((event.clientY - bounds.top) / bounds.height) * 100, 0, 100);
+
+    setHoverZoom({
+      active: true,
+      x: pointerX,
+      y: pointerY
+    });
+  };
+
+  const resetHoverZoom = () => {
+    setHoverZoom((currentZoom) => ({
+      ...currentZoom,
+      active: false
+    }));
+  };
+
+  const openFullscreenViewer = () => {
+    if (!isTouchDevice) {
+      return;
+    }
+
+    setIsFullscreenViewerOpen(true);
+  };
+
+  const closeFullscreenViewer = () => {
+    setIsFullscreenViewerOpen(false);
+    setViewerScale(1);
+    setViewerOffset({ x: 0, y: 0 });
+    setIsViewerInteracting(false);
+    activePointersRef.current.clear();
+    pinchStartDistanceRef.current = 0;
+    pinchStartScaleRef.current = 1;
+  };
+
+  const handleViewerPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsViewerInteracting(true);
+    activePointersRef.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY
+    });
+
+    if (activePointersRef.current.size === 1) {
+      panStartRef.current = {
+        x: event.clientX,
+        y: event.clientY,
+        offsetX: viewerOffsetRef.current.x,
+        offsetY: viewerOffsetRef.current.y
+      };
+    }
+
+    if (activePointersRef.current.size === 2) {
+      const [firstPointer, secondPointer] = Array.from(activePointersRef.current.values());
+      pinchStartDistanceRef.current = getPointerDistance(firstPointer, secondPointer);
+      pinchStartScaleRef.current = viewerScaleRef.current;
+    }
+  };
+
+  const handleViewerPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!activePointersRef.current.has(event.pointerId)) {
+      return;
+    }
+
+    activePointersRef.current.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY
+    });
+
+    if (activePointersRef.current.size === 2) {
+      const [firstPointer, secondPointer] = Array.from(activePointersRef.current.values());
+      const nextDistance = getPointerDistance(firstPointer, secondPointer);
+
+      if (!pinchStartDistanceRef.current) {
+        pinchStartDistanceRef.current = nextDistance;
+        pinchStartScaleRef.current = viewerScaleRef.current;
+      }
+
+      const nextScale = clamp(
+        pinchStartScaleRef.current * (nextDistance / pinchStartDistanceRef.current),
+        1,
+        4
+      );
+
+      setViewerScale(nextScale);
+
+      if (nextScale <= 1) {
+        setViewerOffset({ x: 0, y: 0 });
+      } else {
+        setViewerOffset((currentOffset) =>
+          getClampedViewerOffset(currentOffset, nextScale, viewerImageRef.current)
+        );
+      }
+
+      return;
+    }
+
+    if (activePointersRef.current.size === 1 && viewerScaleRef.current > 1) {
+      setViewerOffset(
+        getClampedViewerOffset(
+          {
+            x: panStartRef.current.offsetX + (event.clientX - panStartRef.current.x),
+            y: panStartRef.current.offsetY + (event.clientY - panStartRef.current.y)
+          },
+          viewerScaleRef.current,
+          viewerImageRef.current
+        )
+      );
+    }
+  };
+
+  const handleViewerPointerRelease = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    activePointersRef.current.delete(event.pointerId);
+
+    if (activePointersRef.current.size < 2) {
+      pinchStartDistanceRef.current = 0;
+      pinchStartScaleRef.current = viewerScaleRef.current;
+    }
+
+    if (viewerScaleRef.current <= 1) {
+      setViewerScale(1);
+      setViewerOffset({ x: 0, y: 0 });
+    }
+
+    if (activePointersRef.current.size === 1) {
+      const [remainingPointer] = Array.from(activePointersRef.current.values());
+      panStartRef.current = {
+        x: remainingPointer.x,
+        y: remainingPointer.y,
+        offsetX: viewerOffsetRef.current.x,
+        offsetY: viewerOffsetRef.current.y
+      };
+    }
+
+    if (!activePointersRef.current.size) {
+      setIsViewerInteracting(false);
+    }
   };
 
   return (
@@ -284,19 +497,31 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
             >
               <div className="grid xl:items-start xl:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)]">
                 <div className="space-y-4 p-3 sm:space-y-5 sm:p-4 md:p-6 xl:p-7">
-                  <div className="relative overflow-hidden rounded-[24px] border border-[#d4af37]/10 bg-[#0d1411] shadow-[0_22px_60px_rgba(0,0,0,0.28)] sm:rounded-[28px]">
+                  <div
+                    className="relative overflow-hidden rounded-[24px] border border-[#d4af37]/10 bg-[#0d1411] shadow-[0_22px_60px_rgba(0,0,0,0.28)] sm:rounded-[28px]"
+                    onMouseMove={handlePreviewMouseMove}
+                    onMouseLeave={resetHoverZoom}
+                  >
                     <SmoothImage
                       src={selectedProductActiveImage}
                       alt={selectedProduct.name}
                       wrapperClassName="flex aspect-[4/5] w-full max-h-[52dvh] items-center justify-center bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.12),transparent_48%),linear-gradient(180deg,#101815_0%,#0c1310_100%)] p-4 sm:max-h-none sm:p-6"
                       optimizedWidth={1600}
                       priority
-                      className="h-full w-auto max-w-full object-contain"
+                      className={[
+                        'h-full w-auto max-w-full object-contain transition-transform duration-150 ease-out',
+                        isTouchDevice ? 'cursor-zoom-in' : 'cursor-crosshair'
+                      ].join(' ')}
+                      style={{
+                        transform: hoverZoom.active && !isTouchDevice ? 'scale(1.9)' : 'scale(1)',
+                        transformOrigin: `${hoverZoom.x}% ${hoverZoom.y}%`
+                      }}
+                      onClick={openFullscreenViewer}
                     />
 
                     <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between gap-2 p-3 sm:p-4">
                       <div className="rounded-full border border-[#d4af37]/15 bg-[#0c1310]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#f2d680] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.24em]">
-                        Vista previa
+                        {isTouchDevice ? 'Toca para ampliar' : 'Mueve el puntero para zoom'}
                       </div>
                       <div className="rounded-full border border-[#d4af37]/15 bg-[#0c1310]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gray-300 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.24em]">
                         {selectedImageIndex + 1}/{selectedProductImages.length}
@@ -420,6 +645,62 @@ const ProductGallery = ({ category }: ProductGalleryProps) => {
                       Cerrar
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedProduct && isFullscreenViewerOpen && (
+        <div className="fixed inset-0 z-[70] bg-[#040706]/96" onClick={closeFullscreenViewer}>
+          <div className="flex h-full flex-col">
+            <div
+              className="flex items-center justify-between px-4 py-4 text-white sm:px-6"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-[#d4af37]/70">
+                  Visor completo
+                </p>
+                <p className="mt-1 text-sm text-gray-300">Haz pinch con dos dedos para acercar o alejar.</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeFullscreenViewer}
+                className="rounded-full border border-[#d4af37]/18 bg-[#101814] px-4 py-2 text-sm font-semibold text-[#f2d680] transition-colors duration-300 hover:border-[#d4af37]/35 hover:bg-[#15211c]"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div
+              className="relative flex flex-1 items-center justify-center overflow-hidden px-4 pb-6 sm:px-6"
+              onClick={closeFullscreenViewer}
+            >
+              <div
+                className="flex max-h-full max-w-full touch-none items-center justify-center"
+                onClick={(event) => event.stopPropagation()}
+                style={{ touchAction: 'none' }}
+                onPointerDown={handleViewerPointerDown}
+                onPointerMove={handleViewerPointerMove}
+                onPointerUp={handleViewerPointerRelease}
+                onPointerCancel={handleViewerPointerRelease}
+              >
+                <div className="relative flex max-h-full max-w-full items-center justify-center overflow-hidden">
+                  <img
+                    ref={viewerImageRef}
+                    src={selectedProductActiveImage}
+                    alt={selectedProduct.name}
+                    draggable={false}
+                    className="max-h-[calc(100dvh-8rem)] max-w-full select-none object-contain will-change-transform"
+                    style={{
+                      transform: `translate3d(${viewerOffset.x}px, ${viewerOffset.y}px, 0) scale(${viewerScale})`,
+                      transformOrigin: 'center center',
+                      transition: isViewerInteracting ? 'none' : 'transform 180ms ease-out'
+                    }}
+                  />
                 </div>
               </div>
             </div>
